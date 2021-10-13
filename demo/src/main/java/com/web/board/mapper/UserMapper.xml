@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.web.board.mapper.UserMapper">
+
+	<resultMap id="board" type="com.web.board.domain.Board">
+	<result property="boardNo" column="BOARDNO" jdbcType="VARCHAR" />
+	<result property="boardTitle" column="BOARDTITLE" jdbcType="VARCHAR"/>
+	<result property="boardContents" column="BOARDCONTENTS" jdbcType="CLOB" javaType="java.lang.String"/>
+	<result property="writer" column="WRITER" jdbcType="VARCHAR" />
+	<result property="regDate" column="REGDATE" jdbcType="DATE" />
+	<result property="updtDate" column="UPDTDATE" jdbcType="DATE" />
+		
+	</resultMap>
+
+
+
+	<!-- 회원 가입 -->
+	<insert id="join" parameterType="com.web.board.domain.User">
+		INSERT INTO users ( userId
+		, userPw
+		, userName
+		, userPhone
+		, joinDate
+		, regId
+		, regDate
+		, updtId
+		, updtDate)
+		VALUES ( #{userId}
+		, #{userPw}
+		, #{userName}
+		, #{userPhone}
+		, sysdate
+		, #{regId, jdbcType=VARCHAR}
+		, #{regDate, jdbcType=DATE}
+		, #{updtId, jdbcType=VARCHAR}
+		, #{updtDate, jdbcType=DATE}
+		)
+
+	</insert>
+
+	<!-- 로그인 -->
+	<select id="login" parameterType="map" resultType="map">
+
+		SELECT COUNT(*)
+		FROM users
+		WHERE userId= #{userId}
+
+	</select>
+
+	<!-- 로그인 체크 -->
+	<select id="loginCk" parameterType="map" resultType="int">
+		SELECT COUNT(*) 
+		FROM users
+		WHERE userId= #{userId}
+		
+		<if test="userPw != null and userPw != ''">
+		and userPw = #{userPw}
+		</if>
+	</select>
+	
+	<!-- 회원가입 체크 -->
+	<select id="dupCheck" parameterType="map" resultType="int">
+		SELECT COUNT(*) 
+		FROM users
+		WHERE userId= #{userId}
+	</select>
+	
+
+	<!-- 게시글 등록 -->
+	<insert id="insertBoard">
+					INSERT INTO board
+					(
+										boardNo
+									  , boardTitle
+									  , boardContents
+									  , writer
+									  , regDate
+									  , updtDate
+					)
+					VALUES
+					(
+										(select NVL(max(boardNo), 0) from board) + 1
+								      , #{param1.boardTitle}
+								      , #{param1.boardContents}
+								      , #{param1.writer}
+								      , (select sysdate from dual)
+								      , (select sysdate from dual)
+		
+					)
+	</insert>
+	
+	
+<!-- 	<insert id="insertBoardHist">
+					INSERT INTO board_History
+					(
+										boardNo
+									  , boardTitle
+									  , boardContents
+									  , writer
+									  , regDate
+									  , updtDate
+					)
+					VALUES
+					(
+										(select NVL(max(boardNo), 0) from board) + 1
+								      , #{param1.boardTitle}
+								      , #{param1.boardContents}
+								      , #{param1.writer}
+								      , (select sysdate from dual)
+								      , (select sysdate from dual)
+		
+					)
+	</insert>
+ -->
+
+	<!-- 게시글 목록 -->
+	<select id="listBoard" resultType="map" parameterType="map">	
+		SELECT A.*
+		FROM
+		(
+						SELECT
+									ROW_NUMBER() OVER (ORDER BY REGDATE ASC) AS BOARDNO
+									, CEIL(ROW_NUMBER() OVER (ORDER BY REGDATE DESC)/#{pageSize}) AS PAGENUM
+									, BOARDTITLE
+									, BOARDCONTENTS
+									, WRITER
+									, TO_CHAR(REGDATE,'yyyy-mm-dd') AS REGDATE
+									, UPDTDATE
+									, COUNT(*) OVER() AS TOTALPAGE
+									, BOARDNO AS BOARDSEQ
+						FROM
+									BOARD
+						WHERE
+									1=1
+	<if test="keyWord != '' and keyWord != null ">
+		<choose>
+			<when test="keyType == 'title' "> 
+				and BOARDTITLE like '%'||#{keyWord}||'%'
+			</when>
+			<when test="keyType == 'contents' ">
+				and BOARDCONTENTS like '%'||#{keyWord}||'%'
+			</when>
+			<when test="keyType == 'writer' ">
+				and WRITER like '%'||#{keyWord}||'%'
+			</when>
+		</choose>
+	</if>
+		) A
+			WHERE PAGENUM = #{currentPage}	
+					ORDER BY  
+									BOARDNO DESC
+	</select>
+	
+	
+	
+<!-- 			<select id="getBoard" resultMap="board">	
+						SELECT
+									  boardNo
+									, boardTitle
+									, boardContents
+									, writer
+									, regDate
+									, updtDate
+						FROM
+									board
+					 	WHERE 	boardNo = #{boardNo}			
+	</select> -->
+	
+	   <!-- 게시글 상세 -->
+    <select id="getBoard" resultType="com.web.board.domain.Board">
+    
+        SELECT *
+         FROM 
+        			board  
+        WHERE
+        			 boardNo = #{boardNo}
+    
+    </select>
+
+
+	<!-- 게시글 수정 -->
+	<update id="updateBoard" parameterType="map">
+        UPDATE 
+        			board
+        	SET 
+        			boardTitle = #{boardTitle},
+            		boardContents = #{boardContents},
+            		regDate = sysdate
+        WHERE 
+        			boardNo = #{boardNo}
+    </update>
+    
+    <!-- 게시글 삭제 -->
+  <delete id="deleteBoard"> 
+  		DELETE 
+  		FROM
+  					board
+  		WHERE
+					boardNo = #{boardNo}			  
+  </delete>  
+
+</mapper>

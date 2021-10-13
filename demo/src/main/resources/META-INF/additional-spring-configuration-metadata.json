@@ -1,0 +1,42 @@
+{"properties": [
+  {
+    "name": "spring.datasource.poolname",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.datasource.poolname'"
+  },
+  {
+    "name": "spring.datasource.jdbcUrl",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.datasource.jdbcUrl'"
+  },
+  {
+    "name": "spring.datasource.jdbcUrl",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.datasource.jdbcUrl'"
+  },
+  {
+    "name": "spring.datasource.jdbcUrl",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.datasource.jdbcUrl'"
+  },
+  {
+    "name": "spring.datasource.jdbcUrl",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.datasource.jdbcUrl'"
+  },
+  {
+    "name": "spring.datasource.jdbcUrl",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.datasource.jdbcUrl'"
+  },
+  {
+    "name": "spring.datasource.jdbcUrl",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.datasource.jdbcUrl'"
+  },
+  {
+    "name": "spring.datasource.jdbcUrl",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.datasource.jdbcUrl'"
+  }
+]}
